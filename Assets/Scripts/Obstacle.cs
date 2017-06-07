@@ -2,11 +2,18 @@
 
 public class Obstacle : MonoBehaviour
 {
+	private Game _game;
+
 	private Player _player;
 	private bool _occupied;
 
+	[Tooltip("The number of score points this object is worth")]
+	public int Points = 10;
+
 	private void Start()
 	{
+		// Cache game
+		_game = GameObject.Find("GameManager").GetComponent<Game>();
 		// Get components
 		_player = GameObject.Find("Frog").GetComponent<Player>();
 	}
@@ -44,8 +51,8 @@ public class Obstacle : MonoBehaviour
 		// Marked lilypad as occupied
 		_occupied = true;
 
-		// Add point
-
+		// Add points
+		_game.Score += Points;
 
 		// Reset player position
 		_player.ResetPosition();

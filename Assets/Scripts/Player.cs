@@ -1,9 +1,23 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
 	// Properties
-	public int Lives = 3;
+	private Text _livesText;
+	private int _lives = 3;
+
+	public int Lives
+	{
+		get { return _lives; }
+		set
+		{
+			// Update value and text
+			_lives = value;
+			_livesText.text = _lives.ToString();
+		}
+	}
+
 	public bool Dead;
 
 	public float MinBoundX, MaxBoundX, MinBoundY, MaxBoundY;
@@ -12,6 +26,8 @@ public class Player : MonoBehaviour
 	private Animator _animator;
 	private AudioSource _audioSource;
 
+	private Game _game;
+
 	// Store frequently changed sounds
 	private AudioClip _leapSound, _successSound, _deathSound;
 
@@ -19,6 +35,9 @@ public class Player : MonoBehaviour
 
 	private void Start()
 	{
+		// Cache game
+		_game = GameObject.Find("GameManager").GetComponent<Game>();
+
 		// Cache components
 		_animator = GetComponent<Animator>();
 		_audioSource = GetComponent<AudioSource>();
@@ -29,6 +48,9 @@ public class Player : MonoBehaviour
 		_deathSound = (AudioClip)Resources.Load("Audio/death");
 
 		// Initialise variables
+		_livesText = GameObject.Find("LivesText").GetComponent<Text>();
+		_livesText.text = _lives.ToString(); 
+
 		_targetPosition = transform.position;
 	}
 
@@ -47,10 +69,13 @@ public class Player : MonoBehaviour
 		// Check if the audio pitch needs resetting
 		if (!_audioSource.isPlaying && Mathf.Approximately(_audioSource.pitch, 1f))
 			_audioSource.pitch = 1;
+	}
 
+	private void FixedUpdate()
+	{
 		// Move player
 		if (!Dead)
-			transform.position = Vector2.MoveTowards(transform.position, _targetPosition, Time.deltaTime/0.5f);
+			transform.position = Vector2.MoveTowards(transform.position, _targetPosition, Time.deltaTime / 0.5f);
 	}
 
 	private void Leap(Direction direction)
@@ -115,9 +140,7 @@ public class Player : MonoBehaviour
 
 		// Check for game over
 		if (Lives <= 0)
-		{
-			// TODO Reset game
-		}
+			_game.GameOver();
 
 		// Reset position
 		Invoke("ResetPosition", 1f);
