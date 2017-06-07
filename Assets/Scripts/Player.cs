@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class Player : MonoBehaviour
 {
 	// Properties
+	public int Lives = 3;
+	public bool Dead;
+
 	public float MinBoundX, MaxBoundX, MinBoundY, MaxBoundY;
 
 	// Variables
@@ -45,18 +48,16 @@ public class PlayerController : MonoBehaviour
 		if (!_audioSource.isPlaying && Mathf.Approximately(_audioSource.pitch, 1f))
 			_audioSource.pitch = 1;
 
-		Debug.Log(transform.position);
-		Debug.Log(_targetPosition);
-
 		// Move player
-		transform.position = Vector2.MoveTowards(transform.position, _targetPosition, Time.deltaTime/0.5f);
+		if (!Dead)
+			transform.position = Vector2.MoveTowards(transform.position, _targetPosition, Time.deltaTime/0.5f);
 	}
 
 	private void Leap(Direction direction)
 	{
-		// Check if the player is still in the middle of a leap
+		// Check if the player is still in the middle of a leap or dead
 		Vector3 curPos = transform.position;
-		if (curPos != _targetPosition) return;
+		if (curPos != _targetPosition || Dead) return;
 
 		// Play animation
 		_animator.Play("Leap");
@@ -95,5 +96,44 @@ public class PlayerController : MonoBehaviour
 
 		// Set rotation
 		transform.rotation = Quaternion.Euler(curRotEuler);
+	}
+
+	public void Die()
+	{
+		// Play death animation
+		_animator.Play("Death");
+
+		// Play death sound
+		_audioSource.clip = _deathSound;
+		_audioSource.Play();
+
+		// Set boolean
+		Dead = true;
+
+		// Subtract life
+		Lives--;
+
+		// Check for game over
+		if (Lives <= 0)
+		{
+			// TODO Reset game
+		}
+
+		// Reset position
+		Invoke("ResetPosition", 1f);
+	}
+
+	public void ResetPosition()
+	{
+		// Reset position and target position
+		Vector3 newPos = new Vector3(0.0f, MinBoundY, 0.0f);
+		transform.position = newPos;
+		_targetPosition = newPos;
+
+		// Reset animation
+		_animator.Play("Idle");
+
+		// Reset dead boolean
+		Dead = false;
 	}
 }
