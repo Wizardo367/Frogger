@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Game : MonoBehaviour
@@ -22,6 +23,8 @@ public class Game : MonoBehaviour
 			_scoreText.text = _score.ToString();
 		}
 	}
+
+	public int LilypadsOccupied;
 
 	private CountdownTimer _countdownTimer;
 	private Player _player;
@@ -66,18 +69,27 @@ public class Game : MonoBehaviour
 		else
 			// Update timer text
 			_timerText.text = _countdownTimer.Seconds.ToString("00");
+
+		// Check if all 5 lilypads have been occupied
+		if (LilypadsOccupied == 5)
+			NextLevel();
 	}
 
 	public void NextLevel()
 	{
 		// Play sound
 		PlaySound("Win");
+
+		// Add a life
+		_player.Lives++;
 	}
 
 	public void GameOver()
 	{
 		// Play sound
 		PlaySound("Lose");
+		// Return to the main menu
+		SceneManager.LoadScene("Menu");
 	}
 
 	public void PlaySound(string sound)

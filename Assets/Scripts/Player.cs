@@ -75,7 +75,7 @@ public class Player : MonoBehaviour
 	{
 		// Move player
 		if (!Dead)
-			transform.position = Vector2.MoveTowards(transform.position, _targetPosition, Time.deltaTime / 0.5f);
+			transform.position = Vector2.MoveTowards(transform.position, _targetPosition, Time.deltaTime / 0.25f);
 	}
 
 	private void Leap(Direction direction)
@@ -125,6 +125,9 @@ public class Player : MonoBehaviour
 
 	public void Die()
 	{
+		// Check if player is already dead
+		if (Dead) return;
+
 		// Play death animation
 		_animator.Play("Death");
 

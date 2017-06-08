@@ -25,12 +25,12 @@ public class Obstacle : MonoBehaviour
 		{
 			if (gameObject.CompareTag("Lilypad"))
 				Lilypad();
-			else if (gameObject.CompareTag("Grass"))
-				Grass();
+			else if (gameObject.CompareTag("Danger"))
+				Danger();
 		}
 	}
 
-	private void Grass()
+	private void Danger()
 	{
 		// Die
 		_player.Die();
@@ -53,6 +53,9 @@ public class Obstacle : MonoBehaviour
 
 		// Add points
 		_game.Score += Points;
+
+		// Add to tracker
+		_game.LilypadsOccupied++;
 
 		// Reset player position
 		_player.ResetPosition();
