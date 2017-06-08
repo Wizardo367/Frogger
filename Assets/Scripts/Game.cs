@@ -10,7 +10,7 @@ public class Game : MonoBehaviour
 
 	// Game variables
 	public int Level = 1;
-	public float Time = 10;
+	public float Time = 99;
 
 	private int _score;
 	public int Score
@@ -48,14 +48,7 @@ public class Game : MonoBehaviour
 		_successSound = (AudioClip)Resources.Load("Audio/success");
 		_loseSound = (AudioClip)Resources.Load("Audio/lose");
 
-		// Set text
-		_levelText.text = Level.ToString();
-		_scoreText.text = Score.ToString();
-		_timerText.text = Time.ToString();
-
-		// Set timer
-		_countdownTimer = new CountdownTimer {Seconds = Time};
-		_countdownTimer.Begin();
+		ResetGame();
 	}
 
 	private void Update()
@@ -73,6 +66,34 @@ public class Game : MonoBehaviour
 		// Check if all 5 lilypads have been occupied
 		if (LilypadsOccupied == 5)
 			NextLevel();
+	}
+
+	public void ResetGame()
+	{
+		// Check level
+		if (Level == 1)
+		{
+			Time = 99;
+		}
+		else if (Level == 2)
+		{
+			Time = 60;
+		}
+		else if (Level >= 3)
+		{
+			Time = 60;
+			// Show snake
+
+		}
+
+		// Set text
+		_levelText.text = Level.ToString();
+		_scoreText.text = Score.ToString();
+		_timerText.text = Time.ToString();
+
+		// Set timer
+		_countdownTimer = new CountdownTimer { Seconds = Time };
+		_countdownTimer.Begin();
 	}
 
 	public void NextLevel()

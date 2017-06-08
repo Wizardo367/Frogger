@@ -7,6 +7,8 @@ public class Obstacle : MonoBehaviour
 	private Player _player;
 	private bool _occupied;
 
+	private string _lastTriggerTag;
+
 	[Tooltip("The number of score points this object is worth")]
 	public int Points = 10;
 
@@ -18,20 +20,32 @@ public class Obstacle : MonoBehaviour
 		_player = GameObject.Find("Frog").GetComponent<Player>();
 	}
 
-	private void OnTriggerEnter2D(Collider2D other)
+	private void OnTriggerStay2D(Collider2D other)
 	{
 		// Check player collisions
 		if (other.CompareTag("Player"))
 		{
 			if (gameObject.CompareTag("Lilypad"))
 				Lilypad();
+			else if (gameObject.CompareTag("Walkable"))
+			{
+				Debug.Log("Yh");
+				// Stick player to object
+				other.transform.position = gameObject.transform.position;
+			}
 			else if (gameObject.CompareTag("Danger"))
+			{
+				Debug.Log("YOLO");
 				Danger();
+			}
 		}
 	}
 
 	private void Danger()
 	{
+		// Check if the player is still leaping
+		if (_player.Leaping) return;
+
 		// Die
 		_player.Die();
 	}

@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
 	}
 
 	public bool Dead;
+	public bool Leaping;
 
 	public float MinBoundX, MaxBoundX, MinBoundY, MaxBoundY;
 
@@ -76,6 +77,10 @@ public class Player : MonoBehaviour
 		// Move player
 		if (!Dead)
 			transform.position = Vector2.MoveTowards(transform.position, _targetPosition, Time.deltaTime / 0.25f);
+
+		// Check if player is still leaping
+		if (transform.position == _targetPosition)
+			Leaping = false;
 	}
 
 	private void Leap(Direction direction)
@@ -121,6 +126,9 @@ public class Player : MonoBehaviour
 
 		// Set rotation
 		transform.rotation = Quaternion.Euler(curRotEuler);
+
+		// Set variable
+		Leaping = true;
 	}
 
 	public void Die()
