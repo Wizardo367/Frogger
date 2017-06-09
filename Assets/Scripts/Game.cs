@@ -33,7 +33,12 @@ public class Game : MonoBehaviour
 
 	// Audio components
 	private AudioSource _audioSource;
-	private AudioClip _winSound, _successSound, _loseSound;
+	private AudioClip _winSound, _loseSound;
+
+	private void Awake()
+	{
+		DontDestroyOnLoad(gameObject);
+	}
 
 	private void Start()
 	{
@@ -46,8 +51,7 @@ public class Game : MonoBehaviour
 		_audioSource = GetComponent<AudioSource>();
 
 		// Get audio clips
-		_winSound = (AudioClip) Resources.Load("Audio/win");
-		_successSound = (AudioClip)Resources.Load("Audio/success");
+		_winSound = (AudioClip)Resources.Load("Audio/win");
 		_loseSound = (AudioClip)Resources.Load("Audio/lose");
 
 		ResetGame();
@@ -63,6 +67,7 @@ public class Game : MonoBehaviour
 			_player.Die();
 		else
 			// Update timer text
+			if (_timerText != null)
 			_timerText.text = _countdownTimer.Seconds.ToString("00");
 
 		// Check if all 5 lilypads have been occupied
@@ -116,16 +121,13 @@ public class Game : MonoBehaviour
 		// Play sound
 		PlaySound("Lose");
 		// Return to the main menu
-		SceneManager.LoadScene("Menu");
+		SceneManager.LoadSceneAsync("Menu");
 	}
 
 	public void PlaySound(string sound)
 	{
 		switch (sound)
 		{
-			case "Success":
-				_audioSource.clip = _successSound;
-				break;
 			case "Win":
 				_audioSource.clip = _winSound;
 				break;
@@ -133,5 +135,7 @@ public class Game : MonoBehaviour
 				_audioSource.clip = _loseSound;
 				break;
 		}
+
+		_audioSource.Play();
 	}
 }
