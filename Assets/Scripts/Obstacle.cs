@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
@@ -7,10 +8,10 @@ public class Obstacle : MonoBehaviour
 	private Player _player;
 	private bool _occupied;
 
-	private string _lastTriggerTag;
-
 	[Tooltip("The number of score points this object is worth")]
 	public int Points = 10;
+
+	private float _travelDiffX;
 
 	private void Start()
 	{
@@ -20,7 +21,7 @@ public class Obstacle : MonoBehaviour
 		_player = GameObject.Find("Frog").GetComponent<Player>();
 	}
 
-	private void OnTriggerStay2D(Collider2D other)
+	private void OnTriggerEnter2D(Collider2D other)
 	{
 		// Check player collisions
 		if (other.CompareTag("Player"))
@@ -29,22 +30,64 @@ public class Obstacle : MonoBehaviour
 				Lilypad();
 			else if (gameObject.CompareTag("Walkable"))
 			{
-				Debug.Log("Yh");
 				// Stick player to object
-				other.transform.position = gameObject.transform.position;
+				Vector3 playerPos = _player.transform.position;
+				Vector3 pos = transform.position;
+				_travelDiffX = pos.x - playerPos.x;
+
+				_player.Travelling = true;
+			}
+		}
+	}
+
+	private void OnTriggerStay2D(Collider2D other)
+	{
+		// Check player collisions
+		if (other.CompareTag("Player"))
+		{
+			if (gameObject.CompareTag("Walkable"))
+			{
+				// Stick player to object
+				if (!_player.Leaping)
+				{
+					Vector3 newPos = transform.position;
+					newPos.x += -_travelDiffX;
+					_player.transform.position = newPos;
+				}
+				else
+				{
+					// Calculate new travel difference
+					Vector3 playerPos = _player.transform.position;
+					Vector3 pos = transform.position;
+					_travelDiffX = pos.x - playerPos.x;
+
+					// Travelling
+					_player.Travelling = true;
+				}
 			}
 			else if (gameObject.CompareTag("Danger"))
 			{
-				Debug.Log("YOLO");
 				Danger();
+			}
+		}
+	}
+
+	private void OnTriggerExit2D(Collider2D other)
+	{
+		// Check player collisions
+		if (other.CompareTag("Player"))
+		{
+			if (gameObject.CompareTag("Walkable"))
+			{
+				_player.Travelling = false;
 			}
 		}
 	}
 
 	private void Danger()
 	{
-		// Check if the player is still leaping
-		if (_player.Leaping) return;
+		// Check if the player is still leaping or travelling
+		if (_player.Leaping || _player.Travelling) return;
 
 		// Die
 		_player.Die();

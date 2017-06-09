@@ -20,19 +20,21 @@ public class Player : MonoBehaviour
 
 	public bool Dead;
 	public bool Leaping;
+	public bool Travelling;
 
 	public float MinBoundX, MaxBoundX, MinBoundY, MaxBoundY;
 
 	// Variables
 	private Animator _animator;
 	private AudioSource _audioSource;
+	public Rigidbody2D Rb2D;
 
 	private Game _game;
 
 	// Store frequently changed sounds
 	private AudioClip _leapSound, _successSound, _deathSound;
 
-	private Vector3 _targetPosition;
+	public Vector3 TargetPosition;
 
 	private void Start()
 	{
@@ -42,6 +44,7 @@ public class Player : MonoBehaviour
 		// Cache components
 		_animator = GetComponent<Animator>();
 		_audioSource = GetComponent<AudioSource>();
+		Rb2D = GetComponent<Rigidbody2D>();
 
 		// Cache audio clips
 		_leapSound = (AudioClip) Resources.Load("Audio/leap");
@@ -52,7 +55,7 @@ public class Player : MonoBehaviour
 		_livesText = GameObject.Find("LivesText").GetComponent<Text>();
 		_livesText.text = _lives.ToString(); 
 
-		_targetPosition = transform.position;
+		TargetPosition = transform.position;
 	}
 
 	private void Update()
@@ -72,22 +75,32 @@ public class Player : MonoBehaviour
 			_audioSource.pitch = 1;
 	}
 
+	private void LateUpdate()
+	{
+		// Check if the boundaries have been breached while travelling
+		Vector3 pos = transform.position;
+		float boundPadding = 0.6f;
+		if (pos.x > MaxBoundX + boundPadding || pos.x < MinBoundX - boundPadding)
+			Die();
+	}
+
 	private void FixedUpdate()
 	{
 		// Move player
 		if (!Dead)
-			transform.position = Vector2.MoveTowards(transform.position, _targetPosition, Time.deltaTime / 0.25f);
+			transform.position = Vector2.MoveTowards(transform.position, TargetPosition, Time.deltaTime / 0.25f);
 
 		// Check if player is still leaping
-		if (transform.position == _targetPosition)
+		if (transform.position == TargetPosition)
+		{
 			Leaping = false;
+		}
 	}
 
 	private void Leap(Direction direction)
 	{
 		// Check if the player is still in the middle of a leap or dead
-		Vector3 curPos = transform.position;
-		if (curPos != _targetPosition || Dead) return;
+		if (Leaping || Dead) return;
 
 		// Play animation
 		_animator.Play("Leap");
@@ -102,33 +115,39 @@ public class Player : MonoBehaviour
 
 		// Move and rotate player
 		Vector3 curRotEuler = transform.rotation.eulerAngles;
-		_targetPosition = curPos;
+
+		// Changes depending on where the player is on the map;
+		Vector3 curPos = transform.position;
+		TargetPosition = curPos;
+
+		float modifier = (curPos.y >= -2.408f && curPos.y <= -0.488f) ? 0.48f : 0.64f;
 
 		switch (direction)
 		{
 			case Direction.Up:
 				curRotEuler.z = 0;
-				_targetPosition.y = Mathf.Clamp(_targetPosition.y + 0.64f, MinBoundY, MaxBoundY);
+				TargetPosition.y = Mathf.Clamp(TargetPosition.y + modifier, MinBoundY, MaxBoundY);
 				break;
 			case Direction.Down:
 				curRotEuler.z = 180;
-				_targetPosition.y = Mathf.Clamp(_targetPosition.y - 0.64f, MinBoundY, MaxBoundY);
+				TargetPosition.y = Mathf.Clamp(TargetPosition.y - modifier, MinBoundY, MaxBoundY);
 				break;
 			case Direction.Left:
 				curRotEuler.z = 90;
-				_targetPosition.x = Mathf.Clamp(_targetPosition.x - 0.64f, MinBoundX, MaxBoundX);
+				TargetPosition.x = Mathf.Clamp(TargetPosition.x - modifier, MinBoundX, MaxBoundX);
 				break;
 			case Direction.Right:
 				curRotEuler.z = -90;
-				_targetPosition.x = Mathf.Clamp(_targetPosition.x + 0.64f, MinBoundX, MaxBoundX);
+				TargetPosition.x = Mathf.Clamp(TargetPosition.x + modifier, MinBoundX, MaxBoundX);
 				break;
 		}
 
 		// Set rotation
 		transform.rotation = Quaternion.Euler(curRotEuler);
 
-		// Set variable
+		// Set variables
 		Leaping = true;
+		Travelling = false;
 	}
 
 	public void Die()
@@ -143,8 +162,10 @@ public class Player : MonoBehaviour
 		_audioSource.clip = _deathSound;
 		_audioSource.Play();
 
-		// Set boolean
+		// Set booleans
 		Dead = true;
+		Leaping = false;
+		Travelling = false;
 
 		// Subtract life
 		Lives--;
@@ -162,7 +183,7 @@ public class Player : MonoBehaviour
 		// Reset position and target position
 		Vector3 newPos = new Vector3(0.0f, MinBoundY, 0.0f);
 		transform.position = newPos;
-		_targetPosition = newPos;
+		TargetPosition = newPos;
 
 		// Reset animation
 		_animator.Play("Idle");
