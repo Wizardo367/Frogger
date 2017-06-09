@@ -12,6 +12,7 @@ public class Obstacle : MonoBehaviour
 	public int Points = 10;
 
 	private float _travelDiffX;
+	public Transform _lastTrigger;
 
 	private void Start()
 	{
@@ -26,16 +27,15 @@ public class Obstacle : MonoBehaviour
 		// Check player collisions
 		if (other.CompareTag("Player"))
 		{
+			// Update last trigger
+			_lastTrigger = transform;
+
 			if (gameObject.CompareTag("Lilypad"))
 				Lilypad();
 			else if (gameObject.CompareTag("Walkable"))
 			{
 				// Stick player to object
-				Vector3 playerPos = _player.transform.position;
-				Vector3 pos = transform.position;
-				_travelDiffX = pos.x - playerPos.x;
-
-				_player.Travelling = true;
+				UpdateTravelDiff();
 			}
 		}
 	}
@@ -57,12 +57,7 @@ public class Obstacle : MonoBehaviour
 				else
 				{
 					// Calculate new travel difference
-					Vector3 playerPos = _player.transform.position;
-					Vector3 pos = transform.position;
-					_travelDiffX = pos.x - playerPos.x;
-
-					// Travelling
-					_player.Travelling = true;
+					UpdateTravelDiff();
 				}
 			}
 			else if (gameObject.CompareTag("Danger"))
@@ -116,5 +111,17 @@ public class Obstacle : MonoBehaviour
 
 		// Reset player position
 		_player.ResetPosition();
+	}
+
+	// Updates the travel distance
+	private void UpdateTravelDiff()
+	{
+		// Calculate difference
+		Vector3 playerPos = _player.transform.position;
+		Vector3 pos = transform.position;
+		_travelDiffX = pos.x - playerPos.x;
+
+		// Set boolean
+		_player.Travelling = true;
 	}
 }
