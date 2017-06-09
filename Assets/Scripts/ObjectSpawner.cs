@@ -29,10 +29,6 @@ public class ObjectSpawner : MonoBehaviour
 		// Apply velocity
 		if (!Mathf.Approximately(Speed, 0f))
 			foreach (var obj in _spawned)
-			{
-				//obj.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed * Time.deltaTime, 0);
-				// Check if the object is outside of the bounds, if so reset it's position
-
-			}
+				obj.GetComponent<Rigidbody2D>().velocity = new Vector2(Speed * Time.fixedDeltaTime, 0);
 	}
 }

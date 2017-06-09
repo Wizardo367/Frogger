@@ -88,13 +88,10 @@ public class Player : MonoBehaviour
 	{
 		// Move player
 		if (!Dead)
-			transform.position = Vector2.MoveTowards(transform.position, TargetPosition, Time.deltaTime / 0.25f);
+			transform.position = Vector2.MoveTowards(transform.position, TargetPosition, Time.fixedDeltaTime / 0.25f);
 
 		// Check if player is still leaping
-		if (transform.position == TargetPosition)
-		{
-			Leaping = false;
-		}
+		Leaping = transform.position != TargetPosition;
 	}
 
 	private void Leap(Direction direction)
@@ -173,6 +170,9 @@ public class Player : MonoBehaviour
 		// Check for game over
 		if (Lives <= 0)
 			_game.GameOver();
+
+		// Reset rotation
+		transform.rotation = Quaternion.identity;
 
 		// Reset position
 		Invoke("ResetPosition", 1f);

@@ -29,6 +29,8 @@ public class Game : MonoBehaviour
 	private CountdownTimer _countdownTimer;
 	private Player _player;
 
+	private GameObject _snake;
+
 	// Audio components
 	private AudioSource _audioSource;
 	private AudioClip _winSound, _successSound, _loseSound;
@@ -75,15 +77,19 @@ public class Game : MonoBehaviour
 		{
 			Time = 99;
 		}
-		else if (Level == 2)
+		else if (Level >= 2)
 		{
 			Time = 60;
-		}
-		else if (Level >= 3)
-		{
-			Time = 60;
-			// Show snake
 
+			if (Level >= 3)
+			{
+				// Show snake
+				if (_snake == null)
+				{
+					_snake = Resources.Load("Prefabs/Snake") as GameObject;
+					Instantiate(_snake);
+				}
+			}
 		}
 
 		// Set text
