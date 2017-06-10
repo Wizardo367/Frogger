@@ -63,11 +63,15 @@ public class Game : MonoBehaviour
 		_countdownTimer.Update();
 
 		if (_countdownTimer.IsDone())
+		{
 			// Level failed (Game Over is automatically triggered by the player when lives == 0)
 			_player.Die();
+			// Reset timer
+			ResetTimer();
+		}
 		else
 			// Update timer text
-			if (_timerText != null)
+		if (_timerText != null)
 			_timerText.text = _countdownTimer.Seconds.ToString("00");
 
 		// Check if all 5 lilypads have been occupied
@@ -75,25 +79,24 @@ public class Game : MonoBehaviour
 			NextLevel();
 	}
 
+	public void ResetTimer()
+	{
+		// Check level
+		_countdownTimer.ResetClock();
+		Time = _countdownTimer.Seconds;
+		_countdownTimer.Begin();
+	}
+
 	public void ResetGame()
 	{
 		// Check level
-		if (Level == 1)
+		if (Level >= 3)
 		{
-			Time = 99;
-		}
-		else if (Level >= 2)
-		{
-			Time = 60;
-
-			if (Level >= 3)
+			// Show snake
+			if (_snake == null)
 			{
-				// Show snake
-				if (_snake == null)
-				{
-					_snake = Resources.Load("Prefabs/Snake") as GameObject;
-					Instantiate(_snake);
-				}
+				_snake = Resources.Load("Prefabs/Snake") as GameObject;
+				Instantiate(_snake);
 			}
 		}
 

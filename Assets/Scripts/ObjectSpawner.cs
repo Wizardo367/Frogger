@@ -7,6 +7,7 @@ public class ObjectSpawner : MonoBehaviour
 	public int Amount = 3;
 	public float Speed = 1;
 	public float Spacing = 0;
+	public Vector3 InitialSpawn;
 
 	private List<GameObject> _spawned = new List<GameObject>();
 
@@ -16,11 +17,11 @@ public class ObjectSpawner : MonoBehaviour
 		for (int i = 0; i < Amount; i++)
 		{
 			// Calculate position
-			Vector3 pos = Spawnable.transform.position;
-			pos.x += Spacing * i;
+			Vector3 initPos = InitialSpawn;
+			initPos.x += Spacing * i;
 
 			// Spawn
-			_spawned.Add(Instantiate(Spawnable, pos, Quaternion.identity));
+			_spawned.Add(Instantiate(Spawnable, initPos, Quaternion.identity));
 		}
 	}
 
