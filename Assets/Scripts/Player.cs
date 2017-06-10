@@ -91,7 +91,8 @@ public class Player : MonoBehaviour
 			transform.position = Vector2.MoveTowards(transform.position, TargetPosition, Time.fixedDeltaTime / 0.25f);
 
 		// Check if player is still leaping
-		Leaping = transform.position != TargetPosition;
+		if (transform.position == TargetPosition)
+			Leaping = false;
 	}
 
 	private void Leap(Direction direction)
