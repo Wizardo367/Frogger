@@ -9,8 +9,16 @@ public class Game : MonoBehaviour
 	private Text _levelText, _scoreText, _timerText;
 
 	// Game variables
-	public int Level = 1;
-	public float Time = 99;
+	private int _level;
+	public int Level
+	{
+		get { return _level; }
+		set
+		{
+			_level = value;
+			_levelText.text = _level.ToString();
+		}
+	}
 
 	private int _score;
 	public int Score
@@ -26,6 +34,7 @@ public class Game : MonoBehaviour
 
 	public int LilypadsOccupied;
 
+	private float _time = 99f;
 	private CountdownTimer _countdownTimer;
 	private Player _player;
 
@@ -37,7 +46,7 @@ public class Game : MonoBehaviour
 
 	private void Awake()
 	{
-		DontDestroyOnLoad(gameObject);
+		DontDestroyOnLoad(gameObject); // Allows audio to play during scene transition
 	}
 
 	private void Start()
@@ -70,9 +79,11 @@ public class Game : MonoBehaviour
 			ResetTimer();
 		}
 		else
+		{
 			// Update timer text
-		if (_timerText != null)
-			_timerText.text = _countdownTimer.Seconds.ToString("00");
+			if (_timerText != null)
+				_timerText.text = _countdownTimer.Seconds.ToString("00");
+		}
 
 		// Check if all 5 lilypads have been occupied
 		if (LilypadsOccupied == 5)
@@ -83,12 +94,36 @@ public class Game : MonoBehaviour
 	{
 		// Check level
 		_countdownTimer.ResetClock();
-		Time = _countdownTimer.Seconds;
+		_time = Level > 1f ? 60f : 99f;
+		_countdownTimer.Seconds = _time;
 		_countdownTimer.Begin();
 	}
 
 	public void ResetGame()
 	{
+		// Set variables
+		Level = 1;
+		Score = 0;
+
+		// Set timer
+		_countdownTimer = new CountdownTimer { Seconds = _time };
+		_countdownTimer.Begin();
+	}
+
+	public void NextLevel()
+	{
+		// Play sound
+		PlaySound("Win");
+
+		// Reset lilypads occupied
+		LilypadsOccupied = 0;
+
+		// Reset timer
+		ResetTimer();
+
+		// Update level
+		Level++;
+
 		// Check level
 		if (Level >= 3)
 		{
@@ -99,21 +134,6 @@ public class Game : MonoBehaviour
 				Instantiate(_snake);
 			}
 		}
-
-		// Set text
-		_levelText.text = Level.ToString();
-		_scoreText.text = Score.ToString();
-		_timerText.text = Time.ToString();
-
-		// Set timer
-		_countdownTimer = new CountdownTimer { Seconds = Time };
-		_countdownTimer.Begin();
-	}
-
-	public void NextLevel()
-	{
-		// Play sound
-		PlaySound("Win");
 
 		// Add a life
 		_player.Lives++;

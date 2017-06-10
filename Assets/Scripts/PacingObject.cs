@@ -10,7 +10,7 @@ public class PacingObject : MonoBehaviour
 
 	// Properties
 	public float Speed;
-	public float minBoundX, maxBoundX;
+	public float MinBoundX, MaxBoundX;
 
 	private void Start()
 	{
@@ -24,7 +24,7 @@ public class PacingObject : MonoBehaviour
 		Vector3 pos = transform.position;
 
 		// Check bounds
-		if (pos.x < minBoundX || pos.x > maxBoundX)
+		if (pos.x < MinBoundX || pos.x > MaxBoundX)
 		{
 			// Invert speed
 			Speed = -Speed;
@@ -36,6 +36,6 @@ public class PacingObject : MonoBehaviour
 		}
 
 		// Move sprite
-		_rb2D.velocity = new Vector2(Speed * Time.fixedDeltaTime, 0);
+		_rb2D.velocity = new Vector2(Speed * Time.fixedDeltaTime, 0f);
 	}
 }
