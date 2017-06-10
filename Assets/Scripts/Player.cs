@@ -143,6 +143,10 @@ public class Player : MonoBehaviour
 		// Set rotation
 		transform.rotation = Quaternion.Euler(curRotEuler);
 
+		// Hotfix for when the player jumps back to the starting position
+		if (Mathf.Approximately(TargetPosition.y, -2.888f))
+			TargetPosition.y = -3.048f;
+
 		// Set variables
 		Leaping = true;
 		Travelling = false;
