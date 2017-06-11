@@ -10,9 +10,17 @@ public class ObjectSpawner : MonoBehaviour
 	public Vector3 InitialSpawn;
 
 	private List<GameObject> _spawned = new List<GameObject>();
+	private GameObject _spawnedObjects;  // Create container for spawned objects
 
 	private void Start()
 	{
+		_spawnedObjects = GameObject.Find("Spawned") ?? new GameObject("Spawned"); // Find or create spawned objects container
+		// Create sub container for spawnable
+		string subContainerName = Spawnable.name + "s";
+		GameObject subContainer = GameObject.Find(subContainerName) ?? new GameObject(subContainerName);
+		// Assign parent
+		subContainer.transform.parent = _spawnedObjects.transform;
+
 		// Create number of spawnables specified
 		for (int i = 0; i < Amount; i++)
 		{
@@ -21,7 +29,11 @@ public class ObjectSpawner : MonoBehaviour
 			initPos.x += Spacing * i;
 
 			// Spawn
-			_spawned.Add(Instantiate(Spawnable, initPos, Quaternion.identity));
+			GameObject obj = Instantiate(Spawnable, initPos, Quaternion.identity);
+			// Assign parent
+			obj.transform.parent = subContainer.transform;
+			// Add to list
+			_spawned.Add(obj);
 		}
 	}
 

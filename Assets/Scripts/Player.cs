@@ -5,8 +5,8 @@ public class Player : MonoBehaviour
 {
 	// Properties
 	private Text _livesText;
-	private int _lives = 3;
 
+	private int _lives = 3;
 	public int Lives
 	{
 		get { return _lives; }
@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
 
 		// Initialise variables
 		_livesText = GameObject.Find("LivesText").GetComponent<Text>();
-		_livesText.text = _lives.ToString(); 
+		Lives = _lives;
 
 		TargetPosition = transform.position;
 	}
