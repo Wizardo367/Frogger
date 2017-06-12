@@ -19,7 +19,7 @@ public class DuckingTurtle : MonoBehaviour
 	{
 		// Check if the turtle is ducking whilst the player is travelling on it, if so kill the player
 		if (_player.Travelling && 
-			_obstacle.LastTrigger == transform && 
+			Obstacle.PlayerLastTrigger == transform && 
 			_spriteRenderer.sprite == null)
 		{
 			// Kill player

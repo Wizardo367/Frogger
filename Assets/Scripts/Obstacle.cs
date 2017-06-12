@@ -11,7 +11,7 @@ public class Obstacle : MonoBehaviour
 	public int Points = 10;
 
 	private float _travelDiffX;
-	public Transform LastTrigger;
+	public static Transform PlayerLastTrigger;
 
 	private void Start()
 	{
@@ -27,7 +27,7 @@ public class Obstacle : MonoBehaviour
 		if (other.CompareTag("Player"))
 		{
 			// Update last trigger
-			LastTrigger = transform;
+			PlayerLastTrigger = transform;
 
 			if (gameObject.CompareTag("Lilypad"))
 				Lilypad();
